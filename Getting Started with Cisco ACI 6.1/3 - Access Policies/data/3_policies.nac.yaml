@@ -13,15 +13,6 @@ apic:
 
 # Interface policies
   access_policies:
-    # mcp:
-    #   action: true
-    #   admin_state: true
-    #   frequency_sec: 2
-    #   initial_delay: 180
-    #   loop_detection: 3
-    #   per_vlan: true
-    #   key: "cisco"
-
     interface_policies:
       cdp_policies:
         - name: cdp-enabled
