@@ -1,0 +1,69 @@
+---
+apic:
+  
+# Node (switch) policies
+  node_policies:
+    vpc_groups:
+      mode: explicit
+      groups:
+        - id: 1
+          name: Leaf1_2
+          switch_1: 201
+          switch_2: 202
+
+# Interface policies
+  access_policies:
+    # mcp:
+    #   action: true
+    #   admin_state: true
+    #   frequency_sec: 2
+    #   initial_delay: 180
+    #   loop_detection: 3
+    #   per_vlan: true
+    #   key: "cisco"
+
+    interface_policies:
+      cdp_policies:
+        - name: cdp-enabled
+          admin_state: true
+        - name: cdp-disabled
+          admin_state: false
+
+      l2_policies:
+        - name: port-local-vlans
+          vlan_scope: portlocal
+
+      lldp_policies:
+        - name: lldp-enabled
+          admin_rx_state: true
+          admin_tx_state: true
+        - name: lldp-disabled
+          admin_rx_state: false
+          admin_tx_state: false
+
+      mcp_policies:
+        - name: mcp-enabled
+          admin_state: true
+
+      port_channel_policies:
+        - name: lacp-active
+          mode: active
+          min_links: 1
+          max_links: 16
+          suspend_individual: true
+          graceful_convergence: true
+          fast_select_standby: true
+          load_defer: false
+          symmetric_hash: false
+        - name: mac-pinning
+          mode: mac-pin
+
+      spanning_tree_policies:
+        - name: bpdu-filter-enabled
+          bpdu_filter: true
+          # bpdu_guard: true
+
+# Global policies
+    aaeps:
+      - name: esx-hosts-vds-vlans
+

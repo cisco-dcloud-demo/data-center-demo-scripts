@@ -1,0 +1,14 @@
+apic:
+  access_policies:  
+
+# Interface policy groups
+    leaf_interface_policy_groups:
+
+# Access port
+      - name: esx-hosts-vds
+        type: access
+        aaep: esx-hosts-vds-vlans
+        lldp_policy: lldp-enabled
+        cdp_policy: cdp-enabled
+        l2_policy: port-local-vlans
+
