@@ -1,0 +1,43 @@
+---
+apic:
+  node_policies:
+    inb_endpoint_group: inb
+    oob_endpoint_group: default
+
+# Pod 1
+    nodes:
+      - id: 201
+        pod: 1
+        role: leaf
+        name: Leaf1
+        serial_number: TEP-1-101
+        set_role: true
+        oob_address: 198.18.128.7/18
+        oob_gateway: 198.18.128.1
+
+      - id: 202
+        pod: 1
+        role: leaf
+        name: Leaf2
+        serial_number: TEP-1-102
+        set_role: true
+        oob_address: 198.18.128.8/18
+        oob_gateway: 198.18.128.1
+
+      - id: 101
+        pod: 1
+        role: spine
+        name: Spine1
+        serial_number: TEP-1-103
+        set_role: true
+        oob_address: 198.18.128.5/18
+        oob_gateway: 198.18.128.1
+
+      - id: 102
+        pod: 1
+        role: spine
+        name: Spine2
+        serial_number: TEP-1-104
+        set_role: true
+        oob_address: 198.18.128.6/18
+        oob_gateway: 198.18.128.1

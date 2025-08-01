@@ -1,0 +1,188 @@
+---
+apic:
+  tenants:
+    - name: PseudoCo
+      managed: true
+      description: Configured by NAC
+
+# Filters
+      filters:
+        - name: 'icmp'
+          entries:
+            - name: 'icmp'
+              protocol: icmp
+
+        - name: 'tcp-src-any-dst-80'
+          entries:
+            - name: 'tcp-src-any-dst-80'
+              ethertype: ipv4
+              protocol: tcp
+              destination_from_port: 80
+              destination_to_port: 80
+
+        - name: 'tcp-src-any-dst-443'
+          entries:
+            - name: 'tcp-src-any-dst-443'
+              ethertype: ipv4
+              protocol: tcp
+              destination_from_port: 443
+              destination_to_port: 443
+
+        - name: 'tcp-src-any-dst-3306'
+          entries:
+            - name: 'tcp-src-any-dst-3306'
+              ethertype: ipv4
+              protocol: tcp
+              destination_from_port: 3306
+              destination_to_port: 3306
+
+# Contracts
+      contracts:
+          - name: permit-to-finance-web
+            scope: context
+            subjects:
+              - name: tcp
+                filters:
+                  - filter: 'tcp-src-any-dst-443'
+                    action: permit
+
+          - name: permit-to-finance-app
+            scope: context
+            subjects:
+              - name: tcp
+                filters:
+                  - filter: 'tcp-src-any-dst-80'
+                    action: permit
+
+          - name: permit-to-finance-db
+            scope: context
+            subjects:
+              - name: tcp
+                filters:
+                  - filter: 'tcp-src-any-dst-3306'
+                    action: permit
+
+# VRFs
+      vrfs:
+        - name: PseudoCo.vrf-01
+
+# Bridge Domains
+      bridge_domains:
+        - name: 192.168.20.0_24
+          unknown_unicast: proxy
+          vrf: PseudoCo.vrf-01
+          subnets:
+            - ip: 192.168.20.1/24
+              public: false
+              shared: false
+              nd_ra_prefix: false
+
+        - name: 192.168.21.0_24
+          unknown_unicast: proxy
+          vrf: PseudoCo.vrf-01
+          subnets:
+            - ip: 192.168.21.1/24
+              public: false
+              shared: false
+              nd_ra_prefix: false
+
+        - name: 192.168.22.0_24
+          unknown_unicast: proxy
+          vrf: PseudoCo.vrf-01
+          subnets:
+            - ip: 192.168.22.1/24
+              public: false
+              shared: false
+              nd_ra_prefix: false
+
+# Application Profiles
+      application_profiles:
+        - name: 'network-segments'
+          description: EPGs provide the VLAN backing for application workloads - no contracts on EPGs
+          endpoint_groups:      
+            - name: '192.168.20.0_24'
+              bridge_domain: '192.168.20.0_24'
+              vmware_vmm_domains:
+                - name: ACI-dvSwitch
+                  u_segmentation: true
+                  deployment_immediacy: immediate
+                  resolution_immediacy: immediate
+
+            - name: '192.168.21.0_24'
+              bridge_domain: '192.168.21.0_24'
+              vmware_vmm_domains:
+                - name: ACI-dvSwitch
+                  u_segmentation: true
+                  deployment_immediacy: immediate
+                  resolution_immediacy: immediate
+
+            - name: '192.168.22.0_24'
+              bridge_domain: '192.168.22.0_24'
+              vmware_vmm_domains:
+                - name: ACI-dvSwitch
+                  u_segmentation: true
+                  deployment_immediacy: immediate
+                  resolution_immediacy: immediate
+
+        - name: 'epg-matched-security-group'
+          endpoint_security_groups:
+            - name: all-epgs
+              vrf: PseudoCo.vrf-01
+              shutdown: false
+              intra_esg_isolation: false
+              preferred_group: false
+              epg_selectors:
+                - application_profile: 'network-segments'
+                  endpoint_group: '192.168.20.0_24'
+                - application_profile: 'network-segments'
+                  endpoint_group: '192.168.21.0_24'
+                - application_profile: 'network-segments'
+                  endpoint_group: '192.168.22.0_24'
+              contracts:
+                consumers:
+                  - permit-to-finance-web
+
+        - name: 'Finance'
+          endpoint_security_groups:
+            - name: Web
+              vrf: PseudoCo.vrf-01
+              shutdown: false
+              intra_esg_isolation: false
+              preferred_group: false
+              tag_selectors:
+                - key: Function
+                  operator: equals
+                  value: Web
+              contracts:
+                providers:
+                  - permit-to-finance-web
+                consumers:
+                  - permit-to-finance-app
+
+            - name: App
+              vrf: PseudoCo.vrf-01
+              shutdown: false
+              intra_esg_isolation: false
+              preferred_group: false
+              tag_selectors:
+                - key: Function
+                  operator: equals
+                  value: App
+              contracts:
+                providers:
+                  - permit-to-finance-app
+                consumers:
+                  - permit-to-finance-db
+
+            - name: DB
+              vrf: PseudoCo.vrf-01
+              shutdown: false
+              intra_esg_isolation: false
+              preferred_group: false
+              tag_selectors:
+                - key: Function
+                  operator: equals
+                  value: DB
+              contracts:
+                providers:
+                  - permit-to-finance-db

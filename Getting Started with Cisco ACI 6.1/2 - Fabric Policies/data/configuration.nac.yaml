@@ -1,0 +1,78 @@
+apic:
+  fabric_policies:
+    global_settings:
+      domain_validation: true
+      enforce_subnet_check: true
+      opflex_authentication: true
+      disable_remote_endpoint_learn: true
+      overlapping_vlan_validation: true
+      remote_leaf_direct: false
+      reallocate_gipo: true 
+
+# Route reflectors
+    fabric_bgp_as: 65000
+    fabric_bgp_rr:
+      - 101
+      - 102
+
+# Banners
+    banners:
+      apic_gui_alias: Getting started with ACI 6.1 
+      apic_cli_banner: Getting started with ACI 6.1 
+      switch_cli_banner: Getting started with ACI 6.1 
+
+# Pod policies
+    pod_policies:
+      date_time_policies:
+        - name: NTP
+          ntp_servers:
+            - hostname_ip: 198.18.128.1
+
+# DNS policies
+    dns_policies:
+      - name: AD
+        mgmt_epg: oob
+        providers:
+          - ip: 198.18.133.1
+            preferred: true
+        domains:
+          - name: corp.pseudoco.com
+            default: true
+
+# VMM domain
+    vmware_vmm_domains:
+      - name: ACI-dvSwitch
+        credential_policies:
+          - name: vCenterUser
+            username: !env vcenter_username
+            password: !env vcenter_password
+
+        vcenters:
+          - name: vc1
+            hostname_ip: 198.18.133.30
+            datacenter: PseudoCo-DC
+            statistics: true
+            credential_policy: vCenterUser
+            mgmt_epg: inb
+        uplinks:
+          - id: 1
+            name: uplink1
+          - id: 2
+            name: uplink2
+
+        access_mode: read-write
+        delimiter: '|'
+        tag_collection: true
+        vlan_pool: esx-hosts-vds-vlans
+        allocation: dynamic
+
+        vswitch:
+          cdp_policy: cdp-enabled
+          lldp_policy: lldp-enabled
+          port_channel_policy: mac-pinning
+
+          enhanced_lags:
+            - name: enhanced-lacp
+              mode: active
+              lb_mode: src-port-id
+              num_links: 2

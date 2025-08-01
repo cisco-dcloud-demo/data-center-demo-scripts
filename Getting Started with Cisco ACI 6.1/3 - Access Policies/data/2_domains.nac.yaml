@@ -1,0 +1,6 @@
+apic:
+  access_policies:
+
+# L3 Domains
+    routed_domains:
+      - name: PseudoCo.vrf-01

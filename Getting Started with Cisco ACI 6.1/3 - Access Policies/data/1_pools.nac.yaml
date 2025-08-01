@@ -1,0 +1,10 @@
+apic:
+  access_policies:
+
+# VLAN pools  
+    vlan_pools:
+      - name: esx-hosts-vds-vlans
+        allocation: dynamic
+        ranges:
+          - from: 1000
+            to: 1500
