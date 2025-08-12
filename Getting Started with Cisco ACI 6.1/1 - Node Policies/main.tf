@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aci = {
       source = "CiscoDevNet/aci"
-      version = ">=2.13.2"
+      version = ">=2.17.0"
     }
   }
 }
@@ -18,7 +18,7 @@ provider "aci" {
 module "aci" {
   # A link to the GitHub is here "github.com/netascode/terraform-aci-nac-aci"
   source  = "netascode/nac-aci/aci"
-  version = ">=0.8.1"
+  version = ">=1.1.0"
 
   # This line points the module to the data/ directory, which is where we store our configuration
   yaml_directories = ["data"]
