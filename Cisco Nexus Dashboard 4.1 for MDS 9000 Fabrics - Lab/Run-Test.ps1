@@ -1,7 +1,7 @@
 $sessionXmlPath = "C:\dcloud\session.xml"
 $podsConfigPath = "C:\Scripts\pods.txt"
-$remoteCommand1 = "diskspd.exe -c40G -b1M -d300 -r -w90 -t8 -o256 -Sh -L -Zr -W0 E:\san_testfile_small.dat"
-$remoteCommand2 = "diskspd.exe -c40G -b1M -d300 -r -w10 -t8 -o256 -Sh -L -Zr -W0 E:\san_testfile_large.dat"
+$remoteCommand1 = "diskspd.exe -c35G -b1M -d300 -r -w90 -t8 -o256 -Sh -L -Zr -W0 E:\san_testfile_small.dat"
+$remoteCommand2 = "diskspd.exe -c35G -b1M -d300 -r -w10 -t8 -o256 -Sh -L -Zr -W0 E:\san_testfile_large.dat"
 
 try {
     if (-not (Test-Path $sessionXmlPath)) {
