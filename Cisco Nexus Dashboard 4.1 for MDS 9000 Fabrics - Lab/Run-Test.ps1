@@ -1,14 +1,26 @@
 $sessionXmlPath = "C:\dcloud\session.xml"
-$podsConfigPath = "C:\Scripts\pods.txt"
+$podsFilePath = "C:\Scripts\pods.txt"
 $remoteCommand1 = "diskspd.exe -c35G -b1M -d300 -r -w99 -t8 -o64 -L -Sh -L -Zr -W0 E:\san_testfile_small.dat"
 $remoteCommand2 = "diskspd.exe -c35G -b8k -d300 -r -w99 -t16 -o256 -L -Sh -L -Zr -W0 E:\san_testfile_large.dat"
+
+$settings = @{
+    "dcv-mds-pod1" = "198.19.253.171"
+    "dcv-mds-pod2" = "198.19.253.172"
+    "dcv-mds-pod3" = "198.19.253.173"
+    "dcv-mds-pod4" = "198.19.253.174"
+    "dcv-mds-pod5" = "198.19.253.175"
+    "dcv-mds-pod6" = "198.19.253.181"
+    "dcv-mds-pod7" = "198.19.253.177"
+    "dcv-mds-pod8" = "198.19.253.178"
+}
 
 try {
     if (-not (Test-Path $sessionXmlPath)) {
         throw "Session XML file not found at: $sessionXmlPath"
     }
-    if (-not (Test-Path $podsConfigPath)) {
-        throw "Pods configuration file not found at: $podsConfigPath"
+
+    if (-not (Test-Path $podsFilePath)) {
+        throw "Credentials file not found at: $podsFilePath"
     }
 
     $xmlContent = Get-Content $sessionXmlPath -Raw
@@ -19,26 +31,28 @@ try {
     }
     $currentPodName = $match.Groups[1].Value
 
-    $settings = @{}
-    Get-Content $podsConfigPath | ForEach-Object {
-        if ($_ -match '^\s*#' -or -not $_.Trim()) { return }
-        $key, $value = $_.Split('=', 2)
-        if ($key -and $value) { $settings[$key.Trim()] = $value.Trim() }
+    $targetIp = $settings[$currentPodName]
+    if (-not $targetIp) {
+        throw "IP address for '$currentPodName' not found in the script's configuration."
     }
 
-    $targetIp = $settings[$currentPodName]
-    $username = $settings['Username']
-    $password = $settings['Password']
+    $fileLines = Get-Content -Path $podsFilePath
 
-    if (-not $targetIp) { throw "IP address for '$currentPodName' not found in $podsConfigPath." }
-    if (-not $username) { throw "Username not found in $podsConfigPath." }
-    if (-not $password) { throw "Password not found in $podsConfigPath." }
+    $usernameLine = $fileLines | Where-Object { $_ -match '^Username=' }
+    $passwordLine = $fileLines | Where-Object { $_ -match '^Password=' }
+
+    if (-not $usernameLine -or -not $passwordLine) {
+        throw "Username or Password not found in $podsFilePath"
+    }
+
+    $username = $usernameLine -replace '^Username=', ''
+    $password = $passwordLine -replace '^Password=', ''
 
     $securePassword = ConvertTo-SecureString -String $password -AsPlainText -Force
     $credential = New-Object System.Management.Automation.PSCredential($username, $securePassword)
 
     $session = New-PSSession -ComputerName $targetIp -Credential $credential -ErrorAction Stop
-    
+
     Invoke-Command -Session $session -ScriptBlock {
         param($cmd1, $cmd2)
 
