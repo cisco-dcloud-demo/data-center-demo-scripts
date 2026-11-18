@@ -5,12 +5,12 @@
 ## Overview
 The code is was created for the CISCOU-2065 presentation at Cisco Live 2025 in San Diego by Steve Sharman. 
 
-This code has been slightly modified for use in the Cisco dCloud 'Getting Started with Cisco ACI 6.1' demo, which allows users to complete an initial configuration of an ACI deployment.
+This code has been slightly modified for use in the Cisco dCloud 'Getting Started with Cisco ACI 6.2' demo, which allows users to complete an initial configuration of an ACI deployment.
 
 These script use Network-as-Code to configure the ACI deployment. Read more about Network-as-Code (NaC) here: https://netascode.cisco.com/
 
 ## Getting started
-- Schedule the "Getting Started with Cisco ACI 6.1" demo in Cisco dCloud
+- Schedule the "Getting Started with Cisco ACI 6.2" demo in Cisco dCloud
 - Use the NAC demo guide attached to the demo
 
 ## File Structure
