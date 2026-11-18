@@ -17,9 +17,9 @@ apic:
 
 # Banners
     banners:
-      apic_gui_alias: Getting started with ACI 6.1 
-      apic_cli_banner: Getting started with ACI 6.1 
-      switch_cli_banner: Getting started with ACI 6.1 
+      apic_gui_alias: Getting started with ACI 6.2 
+      apic_cli_banner: Getting started with ACI 6.2 
+      switch_cli_banner: Getting started with ACI 6.2 
 
 # Pod policies
     pod_policies:
